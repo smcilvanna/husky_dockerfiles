@@ -8,6 +8,7 @@ RUN apt-get install -y \
     ros-noetic-husky-simulator \
     ros-noetic-husky-navigation \
     python3-pip \
+    git \
     nano
 
 RUN python3 -m pip install --no-cache-dir casadi gymnasium imageio stable-baselines3

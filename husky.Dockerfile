@@ -8,6 +8,7 @@ RUN apt-get install -y \
     ros-noetic-husky-simulator \
     ros-noetic-husky-navigation \
     python3-pip \
+    git \
     nano
 
 # Install additional python packages (uncomment below and change packages as necessary)
