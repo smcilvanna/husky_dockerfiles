@@ -1,15 +1,18 @@
 # Dockerfiles for Husky Gazebo Simulation
 
 ## File Descriptions
-```husky.Dockerfile``` : Environment with ros-noetic desktop (full), husky-desktop, husky-simulator and husky-navigation. Also includes git, nano and pip.
-```husky_cbfrl.Dockerfile``` : Environment to train cbf parameter model with husky-gazebo simulation, includes all packages as "husky.Dockerfile" with additional pip packages casadi, stable-baselines3 gymnasium imageio.
+```husky.Dockerfile```  
+Environment with ros-noetic desktop (full), husky-desktop, husky-simulator and husky-navigation. Also includes git, nano and pip.  
+  
+```husky_cbfrl.Dockerfile```  
+Environment to train cbf parameter model with husky-gazebo simulation. Includes all the packages per "husky.Dockerfile" with additional pip packages casadi, stable-baselines3 gymnasium imageio required to run NMPC and CBF-RL parameter training.
 
 
-## Prerequsites
+## Prerequisites
 These files will build docker images allowing the simulation environment to be run independently of packages already installed on the host machine.  
-Docker engine is requred to be installed on the host machine, docker desktop includes docker enginer as well as additional gui features for managing images and containers but is not requred.
+Docker engine is required to be installed on the host machine, docker desktop includes docker engine as well as additional gui features for managing images and containers but is not required.
 
-[Docker Engine Install Guide](https://docs.docker.com/engine/install/) (reccomended)  
+[Docker Engine Install Guide](https://docs.docker.com/engine/install/) (recommended)  
   OR  
 [Docker Desktop Install Guide](https://docs.docker.com/desktop/)  
 
@@ -40,7 +43,27 @@ docker run -it \
     husky_docker:latest
 ```  
 Above consists of two commands:  
-```xhost +local:docker``` allows the gui window elements to render on the host system.  
-```docker run -it -<args>``` starts the container with the following options:  
-    --gpus all  = enable nvidia gpu
-    --volume="/home/sm/Documents/docker/husky:/home/user/husky" - mount volume from host system in docker container, adjust paths as necessary
+```xhost +local:docker``` allows the gui window elements to render on the host system.   
+  
+```docker run -it -<args>``` starts the container with arguments as:  
+```--gpus all```  enable nvidia gpu (requires nvidia drivers)  
+```--volume="</path/to/local/dir>:/home/user/husky"``` mounts a directory from host system within docker container.   
+> [!IMPORTANT]
+> The local host directory </path/to/local/dir> should be set to an existing folder on the host.   
+
+```--privileged```  
+```--network="host"``` share host network with container
+```--name husky_container``` this is optional but assigns a non random name to the container which can be used to start/stop/commit later
+```--user user``` the container has a non root user named "user" which will be used by default, user has sudo permissions  
+> [!IMPORTANT]
+> The docker user has been created with user id 1000, in order to avoid permissions conflicts check the output of ```echo $UID``` is 1000 in the host terminal shell. If it is not 1000 you will need to modify the container user id to match.   
+
+```--entrypoint /bin/bash``` start the container in bash shell, from here can execute ros commands  
+```husky_docker:latest``` the final argument is the image tag, modify this if a different tag was used to build image earlier.   
+
+Running the command above should start the docker container and present a bash shell as @user inside the docker container.  
+
+To open a second terminal tab/window execute the following command in a new terminal:  
+```docker exec -it husky_container /bin/bash```  
+This can be run in as many terminal windows as needed.  
+
